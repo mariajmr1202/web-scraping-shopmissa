@@ -1,10 +1,7 @@
-import requests
-from PIL import Image
-import io
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
-
+import etl
 
 class ShopMissA(CrawlSpider):
     name = "productos"
@@ -16,17 +13,8 @@ class ShopMissA(CrawlSpider):
     allowed_domains = ['shopmissa.com']
 
     start_urls = [
-        'https://www.shopmissa.com/collections/skincare',
-        'https://www.shopmissa.com/collections/oki-life',
-        'https://www.shopmissa.com/collections/spa-body',
-        'https://www.shopmissa.com/collections/blenders-sponges',
-        'https://www.shopmissa.com/collections/makeup-brushes',
-        'https://www.shopmissa.com/collections/eyes',
-        'https://www.shopmissa.com/collections/lips',
-        'https://www.shopmissa.com/collections/face-body',
-        'https://www.shopmissa.com/collections/nails',
-        'https://www.shopmissa.com/collections/tools',
-        'https://www.shopmissa.com/collections/makeup-pouches-bags'
+       'https://www.shopmissa.com/collections/blenders-sponges',
+       'https://www.shopmissa.com/collections/nails',
     ]
 
     rules = (
@@ -43,79 +31,40 @@ class ShopMissA(CrawlSpider):
             ), follow = True, callback = 'parse_product'
         ),
     )
-
-    def join_description(self, text_p, text_li):
-        description = ""
-        for text in text_p:
-            text = text.replace('\xa0','')
-            text = text.replace('\n','')
-            description += text
-        for text in text_li:
-            text = text.replace('\xa0','')
-            text = text.replace('\n','')
-            description += text
-        return description
-
-    #Funcion que encuentra la categoria del producto
-    def find_categorie(self, url):
-        categorie = str(url).replace('<200 https://www.shopmissa.com/collections/','')
-        categorie = categorie[:categorie.find('/')].replace('oki-life','Life & Home').replace('spa-body','Spa & Body').replace('-',' ').title()
-        return categorie
-
-    #Funcion que extrae y descarga las imagenes de lo productos
-    def scrapy_images(self, urls, product):
-        try:
-            i = 1
-            for url in urls:
-                image_content = requests.get('https:'+url).content   
-                image_file = io.BytesIO(image_content)
-                image = Image.open(image_file).convert('RGB')
-                file_path = './images/'+ product.replace('-','').replace('+',' ').replace(' ','_') +'_'+str(i)+'.jpg'  # nombre a guardar de la imagen
-                with open(file_path, 'wb') as f:
-                    image.save(f, "JPEG", quality=85)   
-                i+=1
-        except Exception as e:
-            print(e)
-            print ("Error") 
     
     def parse_product(self, response):
+        #Extraer SKU
+        sku = response.xpath('//div[@class="ProductMeta"]//span[@class="ProductMeta__SkuNumber"]/text()').get()
         # Extraer nombre del producto
         name = response.xpath('//div[@class="ProductMeta"]/h1/text()').get()
         # Extraer descripcion del producto
         text_p = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//p/text()').getall()
         text_li = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//li/text()').getall()
-        description = self.join_description(text_p, text_li) 
+        span = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//span/text()').getall()
+        description = etl.join_description(text_p, text_li, span) 
         # Extraer categoria del producto   
-        categorie =  self.find_categorie(response)
+        categorie =  etl.find_categorie(response)
         #Extraer url de imagenes
         images_url = response.xpath('//div[@class="AspectRatio AspectRatio--withFallback"]//img/@data-original-src').getall()
+        images_url = etl.clean_images(images_url)
 
-        products.append({
-            "name": name,
-            "description": description,
-            "categorie" : categorie,
-            "images": images_url,
-        })
+        if categorie != " ":
+            products.append({
+                "name": name,
+                "description": description,
+                "categorie" : categorie,
+                "images": images_url,
+                "sku": sku,
+            })  
 
-        # self.scrapy_images(images_url, name)
         
-
+#Arreglo que tendra la informacion extraida de los productos
 products = []
 
+#Iniciar Scrapy
 process = CrawlerProcess()
 process.crawl(ShopMissA)
 process.start()
 
-# print('\n\n')
-# print('Productos:')
-# print('\n\n')
+etl.transform(products)
 
-# i = 1
-# for product in products:
-#     print(i)
-#     print('Name: '+ product['name'])
-#     print(product['description'])
-#     print('Categorie: '+product['categorie'])
-#     print(product['images'])
-#     i+=1
-#     print('\n')

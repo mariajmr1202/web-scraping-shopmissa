@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "shopmissa",
+  "private_key_id": "5449aab398ba33171f686741d4088edd24093fe8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCUReWScpilTs1s\nI5ICPAl0ED96+Pq+i+cfbDjLQOJbgz7y7HgKK9gWIzBCG1kjqZT8S90X5YVZwr6s\nkV9F9Lph6wXRmDl9fr1fu+SQruXms6N7I/YLZGOVenojBJpPrNKy9MYkZSomXjeK\nZxcl6bBPGZi/NV2Il3FwT4cXrjxidwNBXRDpDR0a7wSbLPytt08HDkPetb9iejWZ\nTkc1LhPpXw7aoxuqTYYryg3swCVkjiNJ83nU/iLOb/U4/rS2SA1zudAwyt9x+Rnr\nYFoSyQQQ699BLXdlCKqAyy1gjQ6ExGQ49MuXcQLbsr2KiAP4ssXWWUh/auEHPheU\nQwGcoDCFAgMBAAECggEARUMZaH2rnJzhDMDY9b5B1Du6y6D+0H/d6SnOpfObSZBX\nmXao5Gdyu3SYmGjaDPSsqeZuUzleP33fQBFwZedaIV9+CliHkn3fzJaiwItSzZ/g\noCc+SjgM5MifwTfnNYzPp9T7sgin1eBxJW/eulEdkPWuCrPNC39i+EnOG1vCzWOA\n0DVLNQ8WLUm5h3z0RbImaghlnJZgp7XmHR6Sp8OBYUIz+KO6i2smkZXI+AHJLWoE\nlgTBMqpP+9SEb7hqoD55qHVdeGi/u7uD2amWLU3ReEruPvPUDt2g5Jb10g6NWBk6\nnlGLU8SjkEr5m7PPjCgHS9kvVJa1dYi0B+cos2TPyQKBgQDGCn9I1Numq+VM8Bzu\nAw9XSvfxEM321UcIbgGs+HOQbS3BkIVTY2SKCE2T9olVNNI3qyKRnuAX+USVIsHO\nCEDiRyA1s4G64JAYOMm/+JvOX3CGfGTGrrfWZdzepXzkzQm0IZY7pDI81glvOiD7\n++DIMaXJO4xgrwvq/LULZtAmowKBgQC/qrcWFBLdCN6cpfDm23AGFSvRNzPAeRNr\nF0qH0iSNpawqZTqjgdlubUVujrel3R9Uf6W27fStcU3TSElsvKLKLogPaVCiWRa5\n6CCyS4N3tBZk2DvYizg6n7CxBzB6vemX/sh/WT9ZBYXmt7a6p4NGE+F6s4VPUsaj\n3XxlZ+xGtwKBgHxCn+Tx8jRdDQ4+ZtiMwPZzyqjOc31aCyzl4VVHuzM23gvjA1T0\nO2REm3CoszjsYK6fSZx3RIKmW/r7iQEeup+AI1yumkrIloEsOKKkehZ+Wdt4d78W\nZ7E1zuVAjuH9KQaGQH6Boyf64IaSwZl6TGswg6aFH6qWivLRx0M1KovjAoGADCPM\n+uoEk9l2+CcOjiDCBLCcmODNN1iz4SmVf+rQg+RFdl35C9gypGrpZepGOYw66sg2\n/9IsmDu/+Szv8aI1EWdHGOrLv6yy4s2QHJrp1dAjRvnnOH0A772jnGLfMDcNL6Jk\noqRNfd76rzVdro7jorGpq3Lpc6/DgyeJNIcTkRsCgYEAg6tO/8k2PLc5UgQ4gr0J\nTafRJQ4UxZ8So8LE4fJA9O3ZwIignokd36P1RZaoWJ9m5QPFNtTTO7d6gOZYk3Mw\nsFf1/ja4QNVUexK0GE7RG65mTjfDJWG3DkBsnTK/3cS0tugVICoOrrR7rAVUy2gZ\nc0fL6+t6OhkPbNh6Ocf0IQM=\n-----END PRIVATE KEY-----\n",
+  "client_email": "shopmissa@shopmissa.iam.gserviceaccount.com",
+  "client_id": "101757558391168998827",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/shopmissa%40shopmissa.iam.gserviceaccount.com"
+}
