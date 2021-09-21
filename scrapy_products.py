@@ -15,6 +15,7 @@ class ShopMissA(CrawlSpider):
     start_urls = [
        'https://www.shopmissa.com/collections/blenders-sponges',
        'https://www.shopmissa.com/collections/nails',
+       'https://www.shopmissa.com/collections/tools',
     ]
 
     rules = (
@@ -57,7 +58,6 @@ class ShopMissA(CrawlSpider):
                 "sku": sku,
             })  
 
-        
 #Arreglo que tendra la informacion extraida de los productos
 products = []
 
@@ -67,4 +67,5 @@ process.crawl(ShopMissA)
 process.start()
 
 etl.transform(products)
+
 

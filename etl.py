@@ -1,6 +1,9 @@
-# import requests
-# import io
 import sheets_conexion
+import requests
+from PIL import Image
+import io
+import os
+import shutil
 
 categories = [
     'Makeup Brushes', 'Skincare', 'Blenders Sponges', 
@@ -10,14 +13,10 @@ categories = [
 
 #Guardar imagen con las dimensiones adecuadas
 def clean_images(images_url):
-    images = ""
+    images = []
     for image in images_url:
-        # url = 'https:' + image[:-17] + '_400x.jpg'
-        # urls.append(url)
-        if images_url.index(image) != 0:
-            images +=', ' + 'https:' + image[:-17] + '_400x.jpg'
-        else:
-            images += 'https:' + image[:-17] + '_400x.jpg'
+        url = 'https:' + image[:-17] + '_400x' + image[-17:]
+        images.append(url)
     return images 
 
 #Verificar tamaño de imagenes
@@ -85,8 +84,34 @@ def join_attributes(products):
         string_products.append(string)
     return string_products
 
+def extract_images(products):
+        if os.path.isdir('./images'):
+            try:
+                shutil.rmtree('./images')
+            except OSError as e:
+                print ("Error: %s - %s." % (e.filename, e.strerror))
+        os.mkdir('./images')
+        for product in products:
+            i = 1
+            for url in product["images"]:
+                try:
+                    image_content = requests.get(url).content
+                    image_file = io.BytesIO(image_content)
+                    image = Image.open(image_file).convert('RGB')
+                    file_path = './images/'+ product['sku'] + '_' + str(i) + '.jpg'
+                    with open(file_path, 'wb') as f:
+                        image.save(f, "JPEG", quality=80, optimize=True, progressive=True)
+                    product["images"][product["images"].index(url)] = product["sku"] + '_' + str(i)
+                    i+=1
+                except Exception as e:
+                    print(e)
+                    print ("Error")
+            product["images"] = ", ".join(product["images"] )
+
+
 def transform(products):
     eliminate_duplicates(products)
+    extract_images(products)
     string_products = join_attributes(products)
     #Cargar data en una hoja de sheets
     sheets_conexion.load_data(string_products)
