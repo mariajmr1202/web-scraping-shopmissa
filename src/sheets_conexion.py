@@ -9,7 +9,7 @@ def conexion():
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive"
     ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("sheets_credencials.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name("../sheets_credencials.jsonsheets_credencials.json", scope)
     client = gspread.authorize(creds) 
     sheet = client.open("missy").sheet1    
     return sheet
