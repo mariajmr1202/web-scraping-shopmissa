@@ -1,4 +1,6 @@
+#Modulo de conexion a la API de Google Sheets
 import sheets_conexion
+#Libreria pillow para modificar imagenes
 import PIL
 
 categories = [
@@ -21,24 +23,13 @@ def clean_images(images_url):
         images.append(url)
     return images 
 
-#Verificar tamaño de imagenes
-# def images_size(url):
-#     image = requests.get(url).content
-#     image_b = io.BytesIO(image).read()
-#     size = len(image_b)
-#     result = "{}".format(size / 1e3)
-#     result = float(result)
-#     sizes.append(result)
-
-#Limpian las descripciones de los productos
-def clean_description(texts, is_li):
+#Limpia las descripciones de los productos
+def clean_description(texts):
     description = ""
     for text in texts:
-        if is_li == True:
-            text = text.capitalize().replace('\xa0',' ')
-        else:
-            text = text.replace('\xa0',' ').capitalize()
-        if text.replace('\n','') == '':
+        text = text.replace('\xa0',' ').capitalize()
+        #Elimina lineas en blanco
+        if text.replace('\n','') == '': 
             text = text.replace('\n','')
         else:
             text = text.replace('\n','. ')
@@ -47,16 +38,19 @@ def clean_description(texts, is_li):
 
 #Une las descripciones de los productos
 def join_description(text_p, text_li, span):
-    description = clean_description(text_li, True)
-    description += clean_description(text_p, False)
-    description += clean_description(span, False)
+    description = clean_description(text_li)
+    description += clean_description(text_p)
+    description += clean_description(span)
     return description   
 
 #Funcion que encuentra la categoria del producto
 def find_categorie(url):
     categorie = str(url).replace('<200 https://www.shopmissa.com/collections/','')
+    #Organiza el nombre de la categoria
     categorie = categorie[:categorie.find('/')].replace('oki-life','Life & Home').replace('spa-body','Spa & Body').replace('face-body','Face')
     categorie = categorie.replace('makeup-pouches-bags','Makeup Bags').replace('-',' ').title()
+    #Verifica que la categoria exista, ya que por la estructura de la pagina Shopmissa, 
+    #puede traer productos que no sean de ninguna categoria
     if categorie in categories:
         return categorie
     return " "
@@ -82,6 +76,7 @@ def join_attributes(products):
         categorie = str(product['categorie'])
         description = str(product['description'])
         images = str(product['images'])
+        #Formato de Woocomerce
         string = ';simple;;' + name + ';1;0;visible;;' + description + ';;;taxable;;1;;;0;0;;;;;0;;;;' + categorie + ';;;'+ images +';;;;;;;;;0;;;;;;;;'
         string_products.append(string)
     return string_products
@@ -91,7 +86,9 @@ def progressive_images(products):
     for product in products:
         i = 1
         for url in product["images"]:
+            #Asigna el nombre de las imagenes de los productos
             product["images"][product["images"].index(url)] = product["sku"] + '_' + str(i)
+            #Busca las imagenes por su nombre
             local_url = './images/'+ product["sku"] + '_' + str(i) +'.jpeg'
             img = PIL.Image.open(local_url)
             i+=1
@@ -103,9 +100,11 @@ def progressive_images(products):
 
 
 def transform(products):
+    #Eliminar productos duplicados
     eliminate_duplicates(products)
+    #Optimizar las imagenes de los productos
     progressive_images(products)
+    #Dar formato de Woocomerce a la informacion de los productos
     string_products = join_attributes(products)
     #Cargar data en una hoja de sheets
     sheets_conexion.load_data(string_products)
-    print(len(products))
