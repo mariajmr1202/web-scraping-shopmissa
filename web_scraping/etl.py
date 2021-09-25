@@ -1,9 +1,5 @@
 import sheets_conexion
-import requests
-from PIL import Image
-import io
-import os
-import shutil
+import PIL
 
 categories = [
     'Makeup Brushes', 'Skincare', 'Blenders Sponges', 
@@ -15,7 +11,13 @@ categories = [
 def clean_images(images_url):
     images = []
     for image in images_url:
-        url = 'https:' + image[:-17] + '_400x' + image[-17:]
+        url_final = image[-17:]
+        url_start = image[:-17]
+        #Para imagenes jpeg
+        if url_final[0] != '.':
+            url_final = '.' + url_final
+            url_start.pop()
+        url = 'https:' + url_start + '_400x' + url_final
         images.append(url)
     return images 
 
@@ -84,34 +86,26 @@ def join_attributes(products):
         string_products.append(string)
     return string_products
 
-def extract_images(products):
-        if os.path.isdir('./images'):
-            try:
-                shutil.rmtree('./images')
-            except OSError as e:
-                print ("Error: %s - %s." % (e.filename, e.strerror))
-        os.mkdir('./images')
-        for product in products:
-            i = 1
-            for url in product["images"]:
-                try:
-                    image_content = requests.get(url).content
-                    image_file = io.BytesIO(image_content)
-                    image = Image.open(image_file).convert('RGB')
-                    file_path = './images/'+ product['sku'] + '_' + str(i) + '.jpg'
-                    with open(file_path, 'wb') as f:
-                        image.save(f, "JPEG", quality=80, optimize=True, progressive=True)
-                    product["images"][product["images"].index(url)] = product["sku"] + '_' + str(i)
-                    i+=1
-                except Exception as e:
-                    print(e)
-                    print ("Error")
-            product["images"] = ", ".join(product["images"] )
+#Colocar formato Progressive a las imagenes con PIL
+def progressive_images(products):
+    for product in products:
+        i = 1
+        for url in product["images"]:
+            product["images"][product["images"].index(url)] = product["sku"] + '_' + str(i)
+            local_url = './images/'+ product["sku"] + '_' + str(i) +'.jpeg'
+            img = PIL.Image.open(local_url)
+            i+=1
+            try: 
+                img.save(local_url, "JPEG", quality=80, optimize=True, progressive=True)
+            except Exception as e:
+                print(e)
+                print ("Error")
 
 
 def transform(products):
     eliminate_duplicates(products)
-    extract_images(products)
+    progressive_images(products)
     string_products = join_attributes(products)
     #Cargar data en una hoja de sheets
     sheets_conexion.load_data(string_products)
+    print(len(products))

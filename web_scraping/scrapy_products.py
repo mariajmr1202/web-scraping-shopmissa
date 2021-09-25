@@ -7,15 +7,15 @@ class ShopMissA(CrawlSpider):
     name = "productos"
     # USER AGENT PARA PROTEGERNOS DE BANEOS
     custom_settings = {
-        "USER_AGENT": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/71.0.3578.80 Chrome/71.0.3578.80 Safari/537.36",
+        'USER_AGENT': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/71.0.3578.80 Chrome/71.0.3578.80 Safari/537.36',
+        'ITEM_PIPELINES' : {'pipelines.CustomProductsImagesPipeline': 1},
+        'IMAGES_STORE' : 'images',
     }
 
     allowed_domains = ['shopmissa.com']
 
     start_urls = [
-       'https://www.shopmissa.com/collections/blenders-sponges',
-       'https://www.shopmissa.com/collections/nails',
-       'https://www.shopmissa.com/collections/tools',
+        'https://www.shopmissa.com/collections/blenders-sponges',
     ]
 
     rules = (
@@ -57,6 +57,15 @@ class ShopMissA(CrawlSpider):
                 "images": images_url,
                 "sku": sku,
             })  
+            i = 0
+            for url in images_url:
+                url_list = [url]
+                i+=1
+                name_image = sku +'_'+ str(i)
+                yield {
+                    'image_urls': url_list,
+                    'images': name_image
+                }
 
 #Arreglo que tendra la informacion extraida de los productos
 products = []
