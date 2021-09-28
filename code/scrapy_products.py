@@ -21,6 +21,7 @@ class ShopMissA(CrawlSpider):
     #Urls de las categorias de shopmissa para extraer productos
     start_urls = [
         'https://www.shopmissa.com/collections/skincare',
+        'https://www.shopmissa.com/collections/blenders-sponges',
         'https://www.shopmissa.com/collections/oki-life',
         'https://www.shopmissa.com/collections/spa-body',
         'https://www.shopmissa.com/collections/makeup-brushes',
@@ -30,7 +31,6 @@ class ShopMissA(CrawlSpider):
         'https://www.shopmissa.com/collections/nails',
         'https://www.shopmissa.com/collections/tools',
         'https://www.shopmissa.com/collections/makeup-pouches-bags'
-        'https://www.shopmissa.com/collections/blenders-sponges',
     ]
 
     rules = (
