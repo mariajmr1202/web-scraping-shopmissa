@@ -23,7 +23,6 @@ class ShopMissA(CrawlSpider):
         'https://www.shopmissa.com/collections/skincare',
         'https://www.shopmissa.com/collections/oki-life',
         'https://www.shopmissa.com/collections/spa-body',
-        'https://www.shopmissa.com/collections/blenders-sponges',
         'https://www.shopmissa.com/collections/makeup-brushes',
         'https://www.shopmissa.com/collections/eyes',
         'https://www.shopmissa.com/collections/lips',
@@ -31,6 +30,7 @@ class ShopMissA(CrawlSpider):
         'https://www.shopmissa.com/collections/nails',
         'https://www.shopmissa.com/collections/tools',
         'https://www.shopmissa.com/collections/makeup-pouches-bags'
+        'https://www.shopmissa.com/collections/blenders-sponges',
     ]
 
     rules = (
@@ -49,42 +49,47 @@ class ShopMissA(CrawlSpider):
     )
     
     def parse_product(self, response):
-        #Extraer SKU del producto
-        sku = response.xpath('//div[@class="ProductMeta"]//span[@class="ProductMeta__SkuNumber"]/text()').get()
-        # Extraer nombre del producto
-        name = response.xpath('//div[@class="ProductMeta"]/h1/text()').get()
-        # Extraer descripcion del producto
-        text_p = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//p/text()').getall()
-        text_li = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//li/text()').getall()
-        span = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//span/text()').getall()
-        description = etl.join_description(text_p, text_li, span) 
-        # Extraer categoria del producto   
-        categorie =  etl.find_categorie(response)
-        #Extraer url de imagenes
-        images_url = response.xpath('//div[@class="AspectRatio AspectRatio--withFallback"]//img/@data-original-src').getall()
-        images_url = etl.clean_images(images_url)
+        try:
+            #Extraer SKU del producto
+            sku = response.xpath('//div[@class="ProductMeta"]//span[@class="ProductMeta__SkuNumber"]/text()').get()
+            # Extraer nombre del producto
+            name = response.xpath('//div[@class="ProductMeta"]/h1/text()').get()
+            # Extraer descripcion del producto
+            text_p = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//p/text()').getall()
+            text_li = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//li/text()').getall()
+            span = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//span/text()').getall()
+            description = etl.join_description(text_p, text_li, span) 
+            # Extraer categoria del producto   
+            categorie =  etl.find_categorie(response)
+            #Extraer url de imagenes
+            images_url = response.xpath('//div[@class="AspectRatio AspectRatio--withFallback"]//img/@data-original-src').getall()
+            images_url = etl.clean_images(images_url)
 
-        #Verifica que pertence a una categoria, ya que por la estructura de la pagina Shopmissa, 
-        #puede traer productos que no sean de ninguna categoria
-        if categorie != " ":
-            products.append({
-                "name": name,
-                "description": description,
-                "categorie" : categorie,
-                "images": images_url,
-                "sku": sku,
-            })  
+            
+            #Verifica que pertence a una categoria, ya que por la estructura de la pagina Shopmissa, 
+            #puede traer productos que no sean de ninguna categoria
+            if categorie != " ":
+                products.append({
+                    "name": name,
+                    "description": description,
+                    "categorie" : categorie,
+                    "images": images_url,
+                    "sku": sku,
+                })  
 
-            i = 0
-            #Descarga de imagenes de productos a traves de Pipeline
-            for url in images_url:
-                url_list = [url]
-                i+=1
-                name_image = sku +'_'+ str(i)
-                yield {
-                    'image_urls': url_list,
-                    'images': name_image
-                }
+                i = 0
+                #Descarga de imagenes de productos a traves de Pipeline
+                for url in images_url:
+                    url_list = [url]
+                    i+=1
+                    name_image = sku +'_'+ str(i)
+                    yield {
+                        'image_urls': url_list,
+                        'images': name_image
+                    }
+        except Exception as e:
+            print(e)
+            print ("Error")
 
 #Arreglo que tendra la informacion extraida de los productos
 products = []

@@ -18,7 +18,7 @@ def clean_images(images_url):
         #Para imagenes jpeg
         if url_final[0] != '.':
             url_final = '.' + url_final
-            url_start.pop()
+            url_start = url_start[:len(url_start)-1]
         url = 'https:' + url_start + '_400x' + url_final
         images.append(url)
     return images 
@@ -33,13 +33,14 @@ def clean_description(texts):
             text = text.replace('\n','')
         else:
             text = text.replace('\n','. ')
+        text = text.strip()
         description += text
     return description    
 
 #Une las descripciones de los productos
 def join_description(text_p, text_li, span):
-    description = clean_description(text_li)
-    description += clean_description(text_p)
+    description = clean_description(text_p)
+    description += clean_description(text_li)
     description += clean_description(span)
     return description   
 
@@ -58,28 +59,15 @@ def find_categorie(url):
 #Elimina los productos duplicados 
 def eliminate_duplicates(products):
     auxiliar = products
-    try:
-        for product in products:
+    for product in products:
+        try:
             for aux in auxiliar:
                 if product != aux and product['sku'] == aux['sku']:
                     product['categorie'] = product['categorie'] + ', ' + aux['categorie']
                     products.pop(auxiliar.index(aux))  
-    except Exception as e:
-        print(e)
+        except Exception as e:
+            print(e)
     return products
-
-# Dar formato a la info de los prodcutos para ser insertados en el csv
-def join_attributes(products):
-    string_products = []
-    for product in products:
-        name = str(product['name'])
-        categorie = str(product['categorie'])
-        description = str(product['description'])
-        images = str(product['images'])
-        #Formato de Woocomerce
-        string = ';simple;;' + name + ';1;0;visible;;' + description + ';;;taxable;;1;;;0;0;;;;;0;;;;' + categorie + ';;;'+ images +';;;;;;;;;0;;;;;;;;'
-        string_products.append(string)
-    return string_products
 
 #Colocar formato Progressive a las imagenes con PIL
 def progressive_images(products):
@@ -97,6 +85,7 @@ def progressive_images(products):
             except Exception as e:
                 print(e)
                 print ("Error")
+        product["images"] = ", ".join(product["images"])
 
 
 def transform(products):
@@ -104,7 +93,5 @@ def transform(products):
     eliminate_duplicates(products)
     #Optimizar las imagenes de los productos
     progressive_images(products)
-    #Dar formato de Woocomerce a la informacion de los productos
-    string_products = join_attributes(products)
     #Cargar data en una hoja de sheets
-    sheets_conexion.load_data(string_products)
+    sheets_conexion.load_data(products)
