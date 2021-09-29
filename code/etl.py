@@ -69,7 +69,8 @@ def join_description(text_p, text_li, span):
     description = clean_description(text_p, False)
     description += clean_description(text_li, True)
     description += clean_description(span, False)
-    description = traslate_text(description)
+    if description != '':
+        description = traslate_text(description)
     return description   
 
 #Funcion que encuentra la categoria del producto

@@ -20,17 +20,17 @@ class ShopMissA(CrawlSpider):
 
     #Urls de las categorias de shopmissa para extraer productos
     start_urls = [
-        'https://www.shopmissa.com/collections/skincare',
+        # 'https://www.shopmissa.com/collections/skincare',
         'https://www.shopmissa.com/collections/blenders-sponges',
-        'https://www.shopmissa.com/collections/oki-life',
-        'https://www.shopmissa.com/collections/spa-body',
-        'https://www.shopmissa.com/collections/makeup-brushes',
-        'https://www.shopmissa.com/collections/eyes',
-        'https://www.shopmissa.com/collections/lips',
-        'https://www.shopmissa.com/collections/face-body',
-        'https://www.shopmissa.com/collections/nails',
-        'https://www.shopmissa.com/collections/tools',
-        'https://www.shopmissa.com/collections/makeup-pouches-bags'
+        # 'https://www.shopmissa.com/collections/oki-life',
+        # 'https://www.shopmissa.com/collections/spa-body',
+        # 'https://www.shopmissa.com/collections/makeup-brushes',
+        # 'https://www.shopmissa.com/collections/eyes',
+        # 'https://www.shopmissa.com/collections/lips',
+        # 'https://www.shopmissa.com/collections/face-body',
+        # 'https://www.shopmissa.com/collections/nails',
+        # 'https://www.shopmissa.com/collections/tools',
+        # 'https://www.shopmissa.com/collections/makeup-pouches-bags'
     ]
 
     rules = (
@@ -78,7 +78,7 @@ class ShopMissA(CrawlSpider):
                 })  
 
                 i = 0
-                #Descarga de imagenes de productos a traves de Pipeline
+                # Descarga de imagenes de productos a traves de Pipeline
                 for url in images_url:
                     url_list = [url]
                     i+=1
