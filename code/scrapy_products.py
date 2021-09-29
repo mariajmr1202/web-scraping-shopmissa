@@ -55,9 +55,9 @@ class ShopMissA(CrawlSpider):
             # Extraer nombre del producto
             name = response.xpath('//div[@class="ProductMeta"]/h1/text()').get()
             # Extraer descripcion del producto
-            text_p = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//p/text()').getall()
-            text_li = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//li/text()').getall()
-            span = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//span/text()').getall()
+            text_p = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]/descendant-or-self::p/text()').getall()
+            text_li = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//descendant-or-self::li/text()').getall()
+            span = response.xpath('//div[@class="ProductMeta__Description"]/div[@class="Rte"]//descendant-or-self::span/text()').getall()
             description = etl.join_description(text_p, text_li, span) 
             # Extraer categoria del producto   
             categorie =  etl.find_categorie(response)
@@ -89,7 +89,7 @@ class ShopMissA(CrawlSpider):
                     }
         except Exception as e:
             print(e)
-            print ("Error")
+            print ("Error scraping")
 
 #Arreglo que tendra la informacion extraida de los productos
 products = []

@@ -2,6 +2,8 @@
 import sheets_conexion
 #Libreria pillow para modificar imagenes
 import PIL
+import emoji
+from googletrans import Translator
 
 categories = [
     'Makeup Brushes', 'Skincare', 'Blenders Sponges', 
@@ -9,39 +11,65 @@ categories = [
     'Nails', 'Tools', 'Makeup Bags'
 ]
 
+#Elimina emojis de los textos
+def deEmojify(text):
+    return emoji.get_emoji_regexp().sub(r'', text.decode('utf8'))
+
 #Guardar imagen con las dimensiones adecuadas
 def clean_images(images_url):
     images = []
-    for image in images_url:
-        url_final = image[-17:]
-        url_start = image[:-17]
-        #Para imagenes jpeg
-        if url_final[0] != '.':
-            url_final = '.' + url_final
-            url_start = url_start[:len(url_start)-1]
-        url = 'https:' + url_start + '_400x' + url_final
-        images.append(url)
+    try:
+        for image in images_url:
+            url_final = image[-17:]
+            url_start = image[:-17]
+            #Para imagenes jpeg
+            if url_final[0] != '.':
+                url_final = '.' + url_final
+                url_start = url_start[:len(url_start)-1]
+            url = 'https:' + url_start + '_400x' + url_final
+            images.append(url)
+    except Exception as e:
+        print(e)
+        print('Error limpiar imagen')
+        print('\n')
     return images 
 
+#Traduccion de textos
+def traslate_text(text):
+    translator = Translator()
+    tradu = translator.translate(text,dest='es')
+    return tradu.text
+
 #Limpia las descripciones de los productos
-def clean_description(texts):
+def clean_description(texts, is_li):
     description = ""
-    for text in texts:
-        text = text.replace('\xa0',' ').capitalize()
-        #Elimina lineas en blanco
-        if text.replace('\n','') == '': 
-            text = text.replace('\n','')
-        else:
-            text = text.replace('\n','. ')
-        text = text.strip()
-        description += text
+    try:
+        for text in texts:
+            text = text.replace('\xa0',' ').replace('\t','').replace('&nbsp',' ')
+            text = text.encode('ascii', 'ignore').decode()
+            if is_li:
+                text = text.capitalize().strip()
+                #Elimina lineas en blanco
+                if text.replace('\n','') == '': 
+                    text = text.replace('\n','')
+                else:
+                    text = text.replace('\n','. ')
+                if len(text) > 1:
+                    if text[len(text)-1] != '.' or text[len(text)-1] != ':':
+                        text += '. '
+            description += text
+    except Exception as e:
+        print(e)
+        print('Error limpiar descripcion')
+    description = description.strip()
     return description    
 
 #Une las descripciones de los productos
 def join_description(text_p, text_li, span):
-    description = clean_description(text_p)
-    description += clean_description(text_li)
-    description += clean_description(span)
+    description = clean_description(text_p, False)
+    description += clean_description(text_li, True)
+    description += clean_description(span, False)
+    description = traslate_text(description)
     return description   
 
 #Funcion que encuentra la categoria del producto
@@ -95,3 +123,4 @@ def transform(products):
     progressive_images(products)
     #Cargar data en una hoja de sheets
     sheets_conexion.load_data(products)
+
